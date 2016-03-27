@@ -136,10 +136,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\MainWindowModel.cs" />
     <Compile Include="Other\BitmapHelper.cs" />
     <Compile Include="Other\ConfigFlags.cs" />
     <Compile Include="Other\Constants.cs" />
-    <Compile Include="Models\MainWindowModel.cs" />
     <Compile Include="Other\OscDeserializer.cs" />
     <Compile Include="Other\DataSubscriber.cs" />
     <Compile Include="Other\KinectProcessor.cs" />
@@ -206,8 +206,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Logo.png" />
-    <Resource Include="Assets\sensor-on-flip.jpg" />
-    <Resource Include="Assets\sensor-on.jpg" />
     <Resource Include="Assets\sensor-tracking-flip.jpg" />
     <Resource Include="Assets\sensor-tracking.jpg" />
   </ItemGroup>
@@ -220,6 +218,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\sensor-standby-flip.jpg" />
+    <Resource Include="Assets\sensor-standby.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\sensor-off-flip.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
