@@ -1,63 +1,37 @@
 ﻿using LaptopOrchestra.Kinect.ViewModel;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace LaptopOrchestra.Kinect.Model
 {
     public class MainWindowModel : ViewModelBase
     {
         #region Properties
-        private string _statusColor;
-        public string StatusColor
+        private string _iconPhoto;
+        public string IconPhoto
         {
-            get { return _statusColor; }
+            get { return _iconPhoto; }
             set
             {
-                if (value != _statusColor)
+                if (value != _iconPhoto)
                 {
-                    _statusColor = value;
-                    OnPropertyChanged("StatusColor");
+                    _iconPhoto = value;
+                    OnPropertyChanged("IconPhoto");
                 }
             }
         }
 
-        private string _status;
-        public string Status
+        private int _state;
+        public int State
         {
-            get { return _status; }
+            get { return _state; }
             set
             {
-                if (value != _status)
+                if (value != _state)
                 {
-                    _status = value;
-                    OnPropertyChanged("Status");
-                }
-            }
-        }
-
-        private string _statusTitle;
-        public string StatusTitle
-        {
-            get { return _statusTitle; }
-            set
-            {
-                if (value != _statusTitle)
-                {
-                    _statusTitle = value;
-                    OnPropertyChanged("StatusTitle");
-                }
-            }
-        }
-
-        private bool _cameraToggleFlag;
-        public bool CameraToggleFlag
-        {
-            get { return _cameraToggleFlag; }
-            set
-            {
-                if (value != _cameraToggleFlag)
-                {
-                    _cameraToggleFlag = value;
-                    OnPropertyChanged("CameraToggleFlag");
+                    _state = value;
+                    OnPropertyChanged("State");
+                    SetIconPhoto();
                 }
             }
         }
@@ -72,22 +46,27 @@ namespace LaptopOrchestra.Kinect.Model
                 {
                     _imageOrientationFlag = value;
                     OnPropertyChanged("ImageOrientationFlag");
+                    SetIconPhoto();
                 }
             }
         }
 
-        private string _orientationButtonText;
-        public string OrientationButtonText
+        private static string[] photo = {
+            "/Assets/sensor-off.jpg",
+            "/Assets/sensor-off-flip.jpg",
+            "/Assets/sensor-standby.jpg",
+            "/Assets/sensor-standby-flip.jpg",
+            "/Assets/sensor-tracking.jpg",
+            "/Assets/sensor-tracking-flip.jpg"
+        };
+
+        #endregion
+
+        #region functions
+        protected void SetIconPhoto()
         {
-            get { return _orientationButtonText; }
-            set
-            {
-                if (value != _orientationButtonText)
-                {
-                    _orientationButtonText = value;
-                    OnPropertyChanged("OrientationButtonText");
-                }
-            }
+            IconPhoto = photo[(State * 2) + ((ImageOrientationFlag - 1) / (-2))];
+            Debug.WriteLine("\n State is: " + State + "... Photo is: " + IconPhoto);
         }
         #endregion
 

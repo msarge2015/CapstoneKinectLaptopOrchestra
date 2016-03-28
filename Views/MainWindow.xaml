@@ -62,7 +62,7 @@
                         Command="{Binding FlipCameraCommand}">
                     <Image>
                         <Image.Source>
-                            <Binding Path="CurrentState.Status"/>
+                            <Binding Path="CurrentWindow.IconPhoto"/>
                         </Image.Source>
                     </Image>
                 </Button>
@@ -84,7 +84,7 @@
                                 <TransformGroup>
                                     <ScaleTransform
                                         x:Name="scaleImage"
-                                        ScaleX="{Binding CurrentState.ImageOrientationFlag}"/>
+                                        ScaleX="{Binding CurrentWindow.ImageOrientationFlag}"/>
                                 </TransformGroup>
                             </Image.RenderTransform>
                         </Image>
@@ -99,7 +99,7 @@
                                 <TransformGroup>
                                     <ScaleTransform
                                         x:Name="scaleCanvas"
-                                        ScaleX="{Binding CurrentState.ImageOrientationFlag}"/>
+                                        ScaleX="{Binding CurrentWindow.ImageOrientationFlag}"/>
                                 </TransformGroup>
                             </Canvas.RenderTransform>
                         </Canvas>

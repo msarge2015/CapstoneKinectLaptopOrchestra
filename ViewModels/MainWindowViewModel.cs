@@ -22,16 +22,16 @@ namespace LaptopOrchestra.Kinect.ViewModel
         private UDPReceiver _udpRec;
         private IList<Body> _bodies;
 
-        private MainWindowModel _currentState;
-        public MainWindowModel CurrentState
+        private MainWindowModel _currentWindow;
+        public MainWindowModel CurrentWindow
         {
-            get { return _currentState; }
+            get { return _currentWindow; }
             set
             {
-                if (_currentState != value)
+                if (_currentWindow != value)
                 {
-                    _currentState = value;
-                    NotifyPropertyChanged("CurrentState");
+                    _currentWindow = value;
+                    NotifyPropertyChanged("CurrentWindow");
                 }
             }
         }
@@ -50,34 +50,29 @@ namespace LaptopOrchestra.Kinect.ViewModel
             }
         }
 
-        private static string[] photo = {
-            "/Assets/sensor-off.jpg",
-            "/Assets/sensor-on.jpg",
-            "/Assets/sensor-on-flip.jpg",
-            "/Assets/sensor-tracking.jpg",
-            "/Assets/sensor-tracking-flip.jpg"
-        };
-
         #endregion
 
         #region Constructor
         public MainWindowViewModel()
         {
-            //Initialize everything
+            //Initialize ViewModel
             _configurationFlags = new Dictionary<JointType, bool>();
             _kinectProcessor = new KinectProcessor();
             _sessionManager = new SessionManager();
             _udpRec = new UDPReceiver(8080, _sessionManager, _kinectProcessor);
             _coordinateMapper = _kinectProcessor.CoordinateMapper;
-            CurrentState = new MainWindowModel();
-            SetState(0);
+
+            //Initialize  MainWindow model
+            CurrentWindow = new MainWindowModel();
+            CurrentWindow.ImageOrientationFlag = 1;
+            CurrentWindow.State = 0;
 
             //Start the background thread for updating tabs.
             MyTabWindowViewModel = new TabWindowViewModel(_sessionManager);
 
             //Start the UI thread for updating the UI. //Debug.WriteLine("\n starting UI thread \n");
             _kinectProcessor.Reader.MultiSourceFrameArrived += UI_Thread;
-            _kinectProcessor.Sensor.IsAvailableChanged += UpdateSensorStatus;
+            _kinectProcessor.Sensor.IsAvailableChanged += UpdateSensorAvailablility;
         }
         #endregion
 
@@ -97,28 +92,24 @@ namespace LaptopOrchestra.Kinect.ViewModel
                 {
                     if (frame != null)
                     {
-                        //SetState(2);
+                        //frame is valid, so set state to STANDBY
+                        CurrentWindow.State = 1;
+
+                        //draw frame to screen
                         mainWin.XAMLImage.Source = frame.ToBitmap();
                     }
                 }
             }
             else
-            {
-                SetState(1);
                 return;
-            }
-                
             #endregion draw bodies
 
             #region draw skeleton
             // Acquire skeleton data
             var bodyFrame = reference.BodyFrameReference.AcquireFrame();
+
             if (bodyFrame == null)
-            {
-                SetState(2);
                 return;
-            }
-                
             else
             {
                 using (bodyFrame)
@@ -131,7 +122,9 @@ namespace LaptopOrchestra.Kinect.ViewModel
                     foreach (var body in _bodies)
                     {
                         if (body == null || !body.IsTracked) continue;
+
                         IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
+
                         // convert the joint points to depth (display) space
                         Dictionary<JointType, System.Windows.Point> alignedJointPoints = new Dictionary<JointType, System.Windows.Point>();
 
@@ -147,57 +140,21 @@ namespace LaptopOrchestra.Kinect.ViewModel
                             alignedJointPoints[jointType] = new System.Windows.Point(colorPoint.X, colorPoint.Y);
                         }
 
-                        SetState(3);
                         mainWin.XAMLCanvas.DrawSkeleton(body, alignedJointPoints, isFirst);
                         isFirst = false;
+                        CurrentWindow.State = 2;
                     }
                 }
             }
             #endregion draw skeleton
-                        
+
         }
 
-        private void UpdateSensorStatus(object sender, IsAvailableChangedEventArgs e)
+        private void UpdateSensorAvailablility(object sender, IsAvailableChangedEventArgs e)
         {
-            SetState(0);
+            CurrentWindow.State = 0;
             var mainWin = System.Windows.Application.Current.Windows.Cast<Window>().FirstOrDefault(window => window is MainWindow) as MainWindow;
             mainWin.XAMLImage.Source = null;
-        }
-
-        protected void SetState(int state)
-        {
-            //State 0: Initializing
-            if (state == 0)
-            {
-                //update MainWindow-Model Values
-                CurrentState.StatusColor = "Red";
-                CurrentState.StatusTitle = "INITIALIZING...";
-                CurrentState.CameraToggleFlag = true;
-                CurrentState.ImageOrientationFlag = 1;
-                CurrentState.OrientationButtonText = "Orientation: MIRRORED";
-                CurrentState.Status = photo[0];
-            }
-            //State 1: Initialized; Kinect Unplugged
-            else if (state == 1)
-            {
-                CurrentState.StatusColor = "Red";
-                CurrentState.StatusTitle = "KINECT UNPLUGGED!";
-                CurrentState.Status = photo[0];
-            }
-            //State 2: Initialized; Kinect On, No Bodies Tracked
-            else if (state == 2)
-            {
-                CurrentState.StatusColor = "Peru";
-                CurrentState.StatusTitle = "STANDBY";
-                CurrentState.Status = photo[1 + (((CurrentState.ImageOrientationFlag)-1)/(-2))];
-            }
-            //State 3: Initialized; Kinect On, Tracking
-            else if (state == 3)
-            {
-                CurrentState.StatusColor = "Lime";
-                CurrentState.StatusTitle = "TRACKING";
-                CurrentState.Status = photo[3 + (((CurrentState.ImageOrientationFlag) - 1) / (-2))];
-            }
         }
 
         #endregion
@@ -236,13 +193,13 @@ namespace LaptopOrchestra.Kinect.ViewModel
         }
         private void FlipCameraCommandLogic()
         {
-            if (CurrentState.ImageOrientationFlag == 1)
+            if (CurrentWindow.ImageOrientationFlag == 1)
             {
-                CurrentState.ImageOrientationFlag = -1;
+                CurrentWindow.ImageOrientationFlag = -1;
             }   
             else
             {
-                CurrentState.ImageOrientationFlag = 1;
+                CurrentWindow.ImageOrientationFlag = 1;
             }
         }
 
