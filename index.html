@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Capstonekinectlaptoporchestra by msarge2015</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Capstonekinectlaptoporchestra</h1>
+      <h2 class="project-tagline">UBC 2015 Capstone Project</h2>
+      <a href="https://github.com/msarge2015/CapstoneKinectLaptopOrchestra" class="btn">View on GitHub</a>
+      <a href="https://github.com/msarge2015/CapstoneKinectLaptopOrchestra/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/msarge2015/CapstoneKinectLaptopOrchestra/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="kicass-kinect-controlled-artistic-sensing-system" class="anchor" href="#kicass-kinect-controlled-artistic-sensing-system" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>KiCASS: Kinect-Controlled Artistic Sensing System</h1>
+
+<p>Please note that this guide is a work in progress; new things are being added every day. Thanks!</p>
+
+<hr>
+
+<h5>
+<a id="intro" class="anchor" href="#intro" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Intro</h5>
+
+<ul>
+<li><a href="#what-is-kicass">What is KiCASS?</a></li>
+<li><a href="#topology">Topology</a></li>
+</ul>
+
+<h5>
+<a id="performance-requirements" class="anchor" href="#performance-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Performance Requirements</h5>
+
+<ul>
+<li><a href="#performer">Performer</a></li>
+<li><a href="#performance-space">Performance Space</a></li>
+<li><a href="#sensor-positioning">Sensor Positioning</a></li>
+</ul>
+
+<h5>
+<a id="kicass-desktop" class="anchor" href="#kicass-desktop" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>KiCASS-desktop</h5>
+
+<ul>
+<li><a href="#kinect-requirements">Kinect Requirements</a></li>
+<li><a href="#download-kicass-desktop">Download KiCASS-desktop</a></li>
+<li><a href="#using-kicass-desktop">Using KiCASS-desktop</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+
+<h5>
+<a id="kicass-patch" class="anchor" href="#kicass-patch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>KiCASS-patch</h5>
+
+<ul>
+<li><a href="#max-requirements">Max Requirements</a></li>
+<li><a href="#download-kicass-patch">Download KiCASS-patch</a></li>
+<li><a href="#using-the-patch">Using the Patch</a></li>
+</ul>
+
+<h5>
+<a id="other" class="anchor" href="#other" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other</h5>
+
+<ul>
+<li><a href="#team">Team</a></li>
+<li><a href="#feedback">Feedback</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+
+<hr>
+
+<h2>
+<a id="intro-1" class="anchor" href="#intro-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Intro</h2>
+
+<h4>
+<a id="what-is-kicass" class="anchor" href="#what-is-kicass" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is KiCASS?</h4>
+
+<p>In simple terms, KiCASS is a system that:</p>
+
+<ul>
+<li>uses the <a href="http://dev.windows.com/en-us/kinect/develop">Microsoft Kinect v2 for PC</a> to perform skeletal tracking of a performer (dancer, musician, etc.)</li>
+<li>packages and sends requested positional data as <a href="http://archive.cnmat.berkeley.edu/OpenSoundControl/">OSC messages</a> to machines running <a href="https://cycling74.com/products/max/">MaxMSP</a>, for further audio manipulation</li>
+</ul>
+
+<p>It was developed as a final year project by a team of <a href="http://www.ece.ubc.ca">UBC ECE</a> students, in collaboration with the UBC Laptop Orchestra (also known as <a href="http://www.ubcimpart.wordpress.com">UBC IMPART</a>), with the goal of adding the new Kinect sensor to the list of available motion capture technologies used by IMPART to create interactive audio-art installations/performances.</p>
+
+<p>Learn more about UBC IMPART and get updates from the KiCASS team on the IMPART <a href="http://www.ubcimpart.wordpress.com">blog</a>!</p>
+
+<h3>
+<a id="topology" class="anchor" href="#topology" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Topology</h3>
+
+<p>The system is composed of three modules:</p>
+
+<ul>
+<li>
+<p><em>Kinect v2 sensor</em></p>
+
+<ul>
+<li>captures performer's skeletal movements and streams it to KiCASS-desktop</li>
+</ul>
+</li>
+<li>
+<p><em>KiCASS-desktop</em></p>
+
+<ul>
+<li>Windows desktop program that interfaces with the sensor, grabbing the relevant positional data of the performer</li>
+<li>interfaces with the Max patch, receiving requests and responding with the requested data in <a href="http://archive.cnmat.berkeley.edu/OpenSoundControl/">OSC format</a>.</li>
+</ul>
+</li>
+<li>
+<p><em>KiCASS-patch</em></p>
+
+<ul>
+<li>Max patch that allows the user to remotely request and receive live OSC data from KiCASS-desktop</li>
+</ul>
+</li>
+</ul>
+
+<p><img src="http://i.imgur.com/ISos9bh.png" alt="kicass-topology"></p>
+
+<hr>
+
+<h2>
+<a id="performerance-requirements" class="anchor" href="#performerance-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Performerance Requirements</h2>
+
+<h4>
+<a id="performer" class="anchor" href="#performer" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Performer</h4>
+
+<ul>
+<li>
+<em>Clothing:</em> Tight-fitting clothes are ideal. Baggy clothing can obscure the skeleton of the performer.</li>
+</ul>
+
+<h4>
+<a id="performance-space" class="anchor" href="#performance-space" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Performance Space</h4>
+
+<ul>
+<li>
+<em>dimensions:</em> Clear the area between the sensor and the performer (up to 15ft x 15ft)</li>
+<li>One performer: Ideal neutral position: 4 ½ ft</li>
+<li>Two performers: Ideal neutral position: 6 ft</li>
+<li>
+<em>environment:</em> Avoid positioning the sensor in direct sunlight or within 1 foot (0.3 m) of audio speakers.</li>
+<li>
+<em>interference:</em> If there’s interference from an external IR source, it will register as another body on the kinect.</li>
+<li>
+<em>heat:</em> The Kinect sensor needs room for the vents and fans to maintain an optimal operating temperature. Keep the area around your sensor free from clutter, and don't cover the vents.</li>
+</ul>
+
+<p><em>Something like this...</em></p>
+
+<p><img src="http://i.imgur.com/sDJrKca.png" alt="performance-space-image"></p>
+
+<h4>
+<a id="sensor-positioning" class="anchor" href="#sensor-positioning" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sensor Positioning</h4>
+
+<ul>
+<li>
+<em>height:</em> The surface should be elevated above the performance floor height by 4ft.</li>
+<li>
+<em>surface:</em> Place your Kinect as close to the edge of a flat, stable surface as you are comfortable with, and make sure no other nearby objects are obstructing the field of view.</li>
+<li>
+<em>angle:</em> Angle the sensor so that it rests at 0 degrees, or slightly downward.</li>
+<li>
+<em>damage:</em> Be careful not to drop the sensor.</li>
+<li>
+<em>smudges:</em> Don't touch the front of the sensor when positioning it; the face of the Kinect sensor has two cameras (one VGA and one infrared camera), as well as IR sensors. They work best when the lens is free from smudges, so avoid touching the front of the sensor.</li>
+</ul>
+
+<hr>
+
+<h2>
+<a id="kicass-desktop-1" class="anchor" href="#kicass-desktop-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>KiCASS-desktop</h2>
+
+<h4>
+<a id="kinect-requirements" class="anchor" href="#kinect-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Kinect Requirements</h4>
+
+<ul>
+<li>Windows 8, 8.1, or 10*</li>
+<li>USB 3.0 port</li>
+<li>4GB+ RAM</li>
+<li>DX11-capable graphics adapter</li>
+<li><a href="https://www.microsoft.com/en-ca/download/details.aspx?id=44559">Kinect for Windows Runtime 2.0</a></li>
+</ul>
+
+<p>*<em>Unfortunately, Windows 7 is not supported by the latest Kinect runtime. Please refer to the <a href="https://www.microsoft.com/en-ca/download/details.aspx?id=44559&amp;e6b34bbe-475b-1abd-2c51-b5034bcdd6d2=True">System Requirements</a> for more details.</em></p>
+
+<h4>
+<a id="download-kicass-desktop" class="anchor" href="#download-kicass-desktop" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download KiCASS-desktop</h4>
+
+<ul>
+<li>
+<a href="https://drive.google.com/folderview?id=0B87LEJT7CsShV0lmclhMN21CWFU&amp;usp=sharing">download</a> the latest stable release, or</li>
+<li>build the latest version using <a href="https://www.visualstudio.com/products/visual-studio-community-vs">Visual Studio</a>
+</li>
+</ul>
+
+<p><em>Archived releases can be found in the Builds folder.</em></p>
+
+<h4>
+<a id="using-kicass-desktop" class="anchor" href="#using-kicass-desktop" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using KiCASS-desktop</h4>
+
+<ul>
+<li>unzip and run the KiCASS executable.</li>
+<li>make sure the Kinect is powered on, and plug in the USB to your computer.</li>
+<li>KiCASS-desktop is now live, awaiting Max users to send a connection request.</li>
+</ul>
+
+<p><img src="http://i.imgur.com/MsWsYDn.png" alt="kicass-desktop-image"></p>
+
+<h4>
+<a id="troubleshooting" class="anchor" href="#troubleshooting" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Troubleshooting</h4>
+
+<p><a href="https://support.xbox.com/en-US/xbox-on-windows/accessories/kinect-for-windows-v2-known-issues">Here</a> are the most common hardware issues with the Kinect v2 sensor.</p>
+
+<hr>
+
+<h2>
+<a id="kicass-patch-1" class="anchor" href="#kicass-patch-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>KiCASS-patch</h2>
+
+<p><a href="https://cycling74.com/products/max/">Download</a> and <a href="https://cycling74.com/wiki/index.php?title=Main_Page">learn more</a> about Max.</p>
+
+<h4>
+<a id="max-requirements" class="anchor" href="#max-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Max Requirements</h4>
+
+<ul>
+<li>Intel Mac (OS X 10.7 or later) OR Windows PC (Windows 7 or later)</li>
+<li>Multicore processor</li>
+<li>2 GB RAM</li>
+<li>1024×768 display</li>
+</ul>
+
+<p>Full system requirements <a href="https://cycling74.com/downloads/sys-reqs/#.Vp3eM1lyzR8">here</a>.</p>
+
+<h4>
+<a id="download-kicass-patch" class="anchor" href="#download-kicass-patch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download KiCASS-patch</h4>
+
+<ul>
+<li>
+<a href="https://drive.google.com/folderview?id=0B87LEJT7CsShV0lmclhMN21CWFU&amp;usp=sharing">download</a> the latest stable release</li>
+</ul>
+
+<h4>
+<a id="using-the-patch" class="anchor" href="#using-the-patch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using the Patch</h4>
+
+<ul>
+<li>Unzip and import the patch into a new instance of Max. </li>
+<li>Input the IP addresses of both computers into the corresponding lines (run "ipconfig" in cmd to find your IP)</li>
+<li>the default port number can be left as-is</li>
+<li>check "Metro" and "Display Data", then press "start</li>
+</ul>
+
+<p><img src="http://i.imgur.com/Tm1Q3uz.png" alt="KiCASS-patch-image"></p>
+
+<hr>
+
+<h2>
+<a id="other-1" class="anchor" href="#other-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other</h2>
+
+<h4>
+<a id="team" class="anchor" href="#team" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Team</h4>
+
+<p>UBC ECE 2015-2016 Capstone team members:</p>
+
+<ul>
+<li>Isaac Cheng</li>
+<li>Kelsey Hawley</li>
+<li>Kevin Hui</li>
+<li>Michael Sargent</li>
+<li>Russil Glover</li>
+</ul>
+
+<h4>
+<a id="feedback" class="anchor" href="#feedback" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Feedback</h4>
+
+<p>Questions? Comments? <a href="https://docs.google.com/forms/d/1tdtCNqIar6QnxPKrEYW6vaafCXlBPwTBE7qGl9ej7ow/viewform">Send us your feedback</a>.</p>
+
+<h4>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h4>
+
+<p>todo</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/msarge2015/CapstoneKinectLaptopOrchestra">Capstonekinectlaptoporchestra</a> is maintained by <a href="https://github.com/msarge2015">msarge2015</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
